@@ -19,16 +19,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class KakaoService {
 
-        public void execKakaoLogin(String authorize_code) {
+        public Map<String,Object> execKakaoLogin(String authorize_code) {
+
+            Map<String,Object> result = new HashMap<String,Object>();
             
             // 엑세스 토큰 받기
             String accessToken = getAccessToken(authorize_code);
-
+            result.put("accessToken", accessToken);
+            
             // 사용자 정보 읽어오기 
             Map<String,Object> userInfo = getUserInfo(accessToken);
-
+            result.put("userInfo", userInfo);
 
             System.out.println(userInfo.toString());
+            return result;
         }
 
         public String getAccessToken (String authorize_code) {
@@ -122,17 +126,57 @@ public class KakaoService {
                 JsonObject kakao_account = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
 
                 String nickname = properties.getAsJsonObject().get("nickname").getAsString();
-                String profile_image = properties.getAsJsonObject().get("profile_image").getAsString();
+                // String profile_image = properties.getAsJsonObject().get("profile_image").getAsString();
                 String email = kakao_account.getAsJsonObject().get("email").getAsString();
 
                 userInfo.put("nickname", nickname);
                 userInfo.put("email", email);
-                userInfo.put("profile_image", profile_image);
+                // userInfo.put("profile_image", profile_image);
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             return userInfo;
+        }
+
+
+        public String logout (String access_Token) {
+            String reqURL = "https://kapi.kakao.com/v1/user/logout";
+            String id = "";
+            try {
+                URL url = new URL(reqURL);
+
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+                //    POST 요청을 위해 기본값이 false인 setDoOutput을 true로
+                conn.setRequestMethod("POST");
+                conn.setDoOutput(true);
+
+                //    요청에 필요한 Header에 포함될 내용
+                conn.setRequestProperty("Authorization", "Bearer " + access_Token);
+
+                // 결과 코드가 200이라면 성공
+                int responseCode = conn.getResponseCode();
+                System.out.println("responseCode : " + responseCode);
+
+                // 요청을 통해 얻은 JSON타입의 Response 메세지 읽어오기
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                String line = "";
+                String result = "";
+
+                while ((line = br.readLine()) != null) {
+                    result += line;
+                }
+                System.out.println("response body : " + result);
+
+                // Gson 라이브러리에 포함된 클래스로 JSON파싱 객체 생성
+                // JsonElemenidt element = JsonParser.parseString(result);
+                br.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return access_Token;
         }
 }
