@@ -31,7 +31,6 @@ public class MainController {
 
         Map<String,Object> result =  kakaoService.execKakaoLogin(code);
 
-        kakaoService.logout(result.get("accessToken").toString());
         return "redirect:webauthcallback://success?accessToken"+result.get("accessToken").toString();
     }
 }
