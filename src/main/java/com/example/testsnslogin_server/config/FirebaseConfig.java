@@ -15,12 +15,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class FirebaseConfig {
 
+    FirebaseApp firebaseApp;
+
     @PostConstruct
     public void init() {
         try {
             FileInputStream serviceAccount = new FileInputStream("src/main/resources/testsnsloginsecret.json");
             FirebaseOptions options = FirebaseOptions.builder().setCredentials(GoogleCredentials.fromStream(serviceAccount)).build();
-            FirebaseApp.initializeApp(options);
+            firebaseApp = FirebaseApp.initializeApp(options);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

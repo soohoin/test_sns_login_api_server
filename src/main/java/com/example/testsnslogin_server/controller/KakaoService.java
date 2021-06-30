@@ -10,6 +10,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.UserRecord;
+import com.google.firebase.auth.UserRecord.CreateRequest;
+import com.google.firebase.auth.UserRecord.UpdateRequest;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -19,17 +24,37 @@ import org.springframework.stereotype.Service;
 @Service
 public class KakaoService {
 
+        // 카카오 로그인 프로세스 진행 (최종 목표는 Firebase CustomToken 발행)
         public Map<String,Object> execKakaoLogin(String authorize_code) {
-
             Map<String,Object> result = new HashMap<String,Object>();
             
-            // 엑세스 토큰 받기
+            // 1. 엑세스 토큰 받기
             String accessToken = getAccessToken(authorize_code);
             result.put("accessToken", accessToken);
             
-            // 사용자 정보 읽어오기 
+            // 2. 사용자 정보 읽어오기 
             Map<String,Object> userInfo = getUserInfo(accessToken);
             result.put("userInfo", userInfo);
+
+
+            // 3. Firebase CustomToken 발행
+            if(userInfo != null) {
+                try {
+                    result.put("customToken", createFirebaseCustomToken(userInfo));
+                    result.put("errYn", "N");
+                    result.put("errMsg", "");
+                } catch (FirebaseAuthException e) {
+                    // 예상치 못한 에러발생
+                    result.put("errYn", "Y");
+                    result.put("errMsg", "예상치 못한 외에 발생");
+                    e.printStackTrace();
+                }
+                
+            } else {
+                // 카카오 로그인 취소 or 실패
+                result.put("errYn", "Y");
+                result.put("errMsg", "카카오 로그인 실패");
+            }
 
             System.out.println(userInfo.toString());
             return result;
@@ -88,11 +113,8 @@ public class KakaoService {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             return access_Token;
         }
-
-
 
         public Map<String, Object> getUserInfo (String access_Token) {
 
@@ -126,24 +148,19 @@ public class KakaoService {
                 JsonObject kakao_account = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
 
                 String nickname = properties.getAsJsonObject().get("nickname").getAsString();
-                // String profile_image = properties.getAsJsonObject().get("profile_image").getAsString();
                 String email = kakao_account.getAsJsonObject().get("email").getAsString();
-
+                String id = element.getAsJsonObject().get("id").getAsString();
+                userInfo.put("id", id);
                 userInfo.put("nickname", nickname);
                 userInfo.put("email", email);
-                // userInfo.put("profile_image", profile_image);
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             return userInfo;
         }
 
-
-        public String logout (String access_Token) {
+        public String logout(String access_Token) {
             String reqURL = "https://kapi.kakao.com/v1/user/logout";
-            String id = "";
             try {
                 URL url = new URL(reqURL);
 
@@ -169,14 +186,43 @@ public class KakaoService {
                     result += line;
                 }
                 System.out.println("response body : " + result);
-
-                // Gson 라이브러리에 포함된 클래스로 JSON파싱 객체 생성
-                // JsonElemenidt element = JsonParser.parseString(result);
                 br.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             return access_Token;
+        }
+
+        // 기본 적으로 유효기간은 1시간 이며 유저 정보를 이용해서 생성할 수 있는 방법이 어려개 있음. ( 공식문서 참고 )
+        public String createFirebaseCustomToken(Map<String,Object> userInfo) throws FirebaseAuthException {
+
+            UserRecord userRecord;
+            String uid = userInfo.get("id").toString();
+            String email = userInfo.get("email").toString();
+            String displayName = userInfo.get("nickname").toString();
+
+            // 1. 사용자 정보로 파이어 베이스 유저정보 update, 사용자 정보가 있다면 userRecord에 유저 정보가 담긴다.
+            try {
+                UpdateRequest request = new UpdateRequest(uid);
+                request.setEmail(email);
+                request.setDisplayName(displayName);
+                userRecord = FirebaseAuth.getInstance().updateUser(request);
+                
+            // 1-2. 사용자 정보가 없다면 > catch 구분에서 createUser로 사용자를 생성하고 return 되는 유저 정보가 userRecord에 담긴다.
+            } catch (FirebaseAuthException e) {
+
+                CreateRequest createRequest = new CreateRequest();
+                createRequest.setUid(uid);
+                createRequest.setEmail(email);
+                createRequest.setEmailVerified(false);
+                createRequest.setDisplayName(displayName);
+                
+                userRecord = FirebaseAuth.getInstance().createUser(createRequest);
+                e.printStackTrace();
+            }
+
+            // 2. 전달받은 user 정보로 CustomToken을 발행한다.
+            return FirebaseAuth.getInstance().createCustomToken(userRecord.getUid());
         }
 }
