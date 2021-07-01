@@ -80,7 +80,7 @@ public class KakaoService {
                 StringBuilder sb = new StringBuilder();
                 sb.append("grant_type=authorization_code");
                 sb.append("&client_id=75be45c34d7befda1bd48e88afe5fe44");  //본인이 발급받은 key
-                sb.append("&redirect_uri=http://192.168.0.6:8080/kakao/sign_in");     // 본인이 설정해 놓은 경로
+                sb.append("&redirect_uri=http://192.168.26.217:8080/kakao/sign_in");     // 본인이 설정해 놓은 경로
                 sb.append("&code=" + authorize_code);
                 bw.write(sb.toString());
                 bw.flush();
@@ -209,7 +209,7 @@ public class KakaoService {
                 request.setDisplayName(displayName);
                 userRecord = FirebaseAuth.getInstance().updateUser(request);
                 
-            // 1-2. 사용자 정보가 없다면 > catch 구분에서 createUser로 사용자를 생성하고 return 되는 유저 정보가 userRecord에 담긴다.
+            // 1-2. 사용자 정보가 없다면 > catch 구분에서 createUser로 사용자를 생성한다.
             } catch (FirebaseAuthException e) {
 
                 CreateRequest createRequest = new CreateRequest();
@@ -219,7 +219,6 @@ public class KakaoService {
                 createRequest.setDisplayName(displayName);
                 
                 userRecord = FirebaseAuth.getInstance().createUser(createRequest);
-                e.printStackTrace();
             }
 
             // 2. 전달받은 user 정보로 CustomToken을 발행한다.
