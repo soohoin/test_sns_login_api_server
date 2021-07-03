@@ -15,9 +15,10 @@ firebase admin sdk 연결 및 flutter 앱의 서버
 ## 프로젝트 진행
 
 - #00 Flutter + Firebase를 이용한 Google, Kakao, Apple 프로세스 정리
-    - Google login Process
+    - **Google login Process**
     ![슬라이드1](https://user-images.githubusercontent.com/31425312/124356989-30dbb200-dc54-11eb-9d57-151abe6359b7.JPG)
-    - Kakao
+    
+    - **Kakao login Process**
     ![슬라이드2](https://user-images.githubusercontent.com/31425312/124356990-32a57580-dc54-11eb-904e-bc8f3972defc.JPG)
 - #01 Firebase_auth - Android 설정 (windows10/VSCode)
 - #02 Firebase_auth - Google 로그인 / 로그아웃
