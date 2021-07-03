@@ -13,9 +13,9 @@ firebase admin sdk 연결 및 flutter 앱의 서버
 
     - **Kakao login Process**
     ![슬라이드2](https://user-images.githubusercontent.com/31425312/124356990-32a57580-dc54-11eb-904e-bc8f3972defc.JPG)
-- #01 Firebase_auth - Android 설정 (windows10/VSCode) > [자세히 보기](https://debaeloper.tistory.com/62)
-- #02 Firebase_auth - Google 로그인 / 로그아웃 > [자세히 보기](https://debaeloper.tistory.com/63)
-- #03 Firebase_auth - Kakao 로그인을 위한 Spring boot + Firebase Admin SDK 설정 > [자세히 보기](https://debaeloper.tistory.com/64)
-- #04 Firebase_auth - Firebase & 카카오 로그인 연동 ( developers.kakao.com 설정편 ) > [자세히 보기](https://debaeloper.tistory.com/65)
-- #05 Firebase_auth - Flutter + Spring boot 연결 및 카카오 로그인 연동 (인가코드/Access token/ user info ) > [자세히 보기](https://debaeloper.tistory.com/66)
-- #06 Firebase_auth - Firebase auth + Spring boot + FLutter 사용자 등록 및 로그인 완료) > [자세히 보기](https://debaeloper.tistory.com/67)
+- [#01 Firebase_auth - Android 설정 (windows10/VSCode)](https://debaeloper.tistory.com/62)
+- [#02 Firebase_auth - Google 로그인 / 로그아웃](https://debaeloper.tistory.com/63)
+- [#03 Firebase_auth - Kakao 로그인을 위한 Spring boot + Firebase Admin SDK 설정](https://debaeloper.tistory.com/64)
+- [#04 Firebase_auth - Firebase & 카카오 로그인 연동 ( developers.kakao.com 설정편 )](https://debaeloper.tistory.com/65)
+- [#05 Firebase_auth - Flutter + Spring boot 연결 및 카카오 로그인 연동 (인가코드/Access token/ user info )](https://debaeloper.tistory.com/66)
+- [#06 Firebase_auth - Firebase auth + Spring boot + FLutter 사용자 등록 및 로그인 완료)](https://debaeloper.tistory.com/67)
