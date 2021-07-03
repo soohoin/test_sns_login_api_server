@@ -21,14 +21,11 @@ public class MainController {
     @RequestMapping("test")
     @ResponseBody
     public String testConnect() {
-
         return "연결성공";
     }
 
     @RequestMapping("kakao/sign_in")
-    public String kakaoSignIn(@RequestParam("code") String code, HttpServletRequest request, HttpServletResponse response, RedirectAttributes attributes) {
-        System.out.println("=========================");
-
+    public String kakaoSignIn(@RequestParam("code") String code) {
         Map<String,Object> result =  kakaoService.execKakaoLogin(code);
 
         return "redirect:webauthcallback://success?customToken="+result.get("customToken").toString();
